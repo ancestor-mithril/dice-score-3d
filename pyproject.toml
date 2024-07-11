@@ -1,0 +1,48 @@
+[project]
+name = "dice-score-3d"
+version = "0.0.0"
+#requires-python = ">=3.10"
+requires-python = ">=3.7"
+description = "Utility for calculating the Dice Similarity Coefficient (DSC) for 3D segmentation masks."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "George Stoica", email = "george.stoica@senticlab.com" },
+]
+maintainers = [
+    { name = "George Stoica", email = "george.stoica@senticlab.com" },
+]
+classifiers = [
+#    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+
+keywords = [
+    "image segmentation",
+    "dice similarity coefficient",
+    "dice score"
+]
+
+dependencies = [
+    "SimpleITK",
+    "nibabel",
+]
+
+[project.urls]
+Repository = "https://github.com/ancestor-mithril/dice-score-3d"
+Issues = "https://github.com/ancestor-mithril/dice-score-3d/issues"
+
+[project.scripts]
+#dice_score_3d = ""
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "flake8"
+]
