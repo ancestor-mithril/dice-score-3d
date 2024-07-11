@@ -30,6 +30,7 @@ keywords = [
 ]
 
 dependencies = [
+    "numpy",
     "SimpleITK",
     "nibabel",
 ]
