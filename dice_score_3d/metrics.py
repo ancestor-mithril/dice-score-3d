@@ -8,8 +8,37 @@ from dice_score_3d.reader import read_mask
 from numpy import ndarray
 
 
-def dice_metrics(ground_truths: str, predictions: str, output_path: str, reorient: bool, dtype: str, prefix: str,
-                 suffix: str, indices: dict, num_workers: int, console: bool):
+def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices: dict, reorient: bool = False,
+                 dtype: str = 'uint8', prefix: str = '', suffix: str = '.nii.gz', num_workers: int = 0,
+                 console: bool = False):
+    """ Calculates Dice metrics for pairs of predictions and GT, writing the aggregated results in a csv or json file.
+
+    Args:
+        ground_truths (str): Path to Ground Truth. Can be a single file or a folder with all the GT volumes. The number
+            of GT files must match the number of predictions.When passing a folder of GT files, the name of the GT
+            files must match the name of the predictions. This is not applicable when passing a single file. Supported
+            file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
+        predictions (str): Path to Ground Truth. Can be a single file or a folder with all the predicted volumes. The
+            number of prediction files must match the number of GT files. When passing a folder of prediction files,
+            the name of the prediction files must match the name of the GT files. This is not applicable when passing a
+            single file. Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
+        output_path (str): The output path to write the computed metrics. Can be a csv or json file, depending on
+            extension. Example: "results.csv", "results.json".
+        indices (dict): Path to the json file describing the indices used for calculating the Dice Similarity
+            Coefficient. Can also be a json string. Only the indices present in the json file are considered when
+            evaluating the Dice Score. Example: "{\"lung_left\": 1, \"lung_right\": 2}".
+        reorient (bool): If `True`, reorients both the GT and the prediction to the default "LPS" orientation before
+            calculating the Dice Score. Default: `False`.
+        dtype (str): Must be either "uint8" when having less than 255 classes, or "uint16" otherwise.
+            Default: `'uint8'`.
+        prefix (str): This parameter is used when the ground truth path is a folder. It filters all the files in the
+            folder and selects only the files with this prefix. Default: `''`
+        suffix (str): This parameter is used when the ground truth path is a folder. It filters all the files in the
+            folder and selects only the files with this suffix. Default: `'.nii.gz'`.
+        num_workers (int): Number of parallel processes to be used to calculate the Dice Score in parallel. Default:
+            `0`.
+        console (bool): If `True`, also prints the Dice metrics to console. Default: `False`.
+    """
     dtype = np.uint8 if dtype == 'uint8' else np.uint16
     assert os.path.isfile(ground_truths) and os.path.isfile(predictions) or \
            os.path.isdir(ground_truths) and os.path.isdir(predictions), ('Prediction path and GT path must both be a '
@@ -136,9 +165,9 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
             scores.append(1.0)
         else:
             scores.append(2 * common / both)
-    metrics['Significant dice'] = {label: score for label, score in zip(index_keys, scores)}
-    metrics['Significant dice']['Mean'] = np.mean(scores)
-    metrics['Significant dice']['Weighted mean'] = np.average(scores, weights=np.sum(gt_voxels, axis=0))
+    metrics['Union dice'] = {label: score for label, score in zip(index_keys, scores)}
+    metrics['Union dice']['Mean'] = np.mean(scores)
+    metrics['Union dice']['Weighted mean'] = np.average(scores, weights=np.sum(gt_voxels, axis=0))
     return metrics
 
 
