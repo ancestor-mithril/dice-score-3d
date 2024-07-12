@@ -1,7 +1,7 @@
 import json
 import os.path
 from concurrent.futures import ProcessPoolExecutor
-from typing import List, Sequence, Tuple
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 from dice_score_3d.reader import read_mask
@@ -142,6 +142,12 @@ def evaluate_predictions(gt_files: List[str], pred_files: List[str], reorient: b
     return common_voxels, all_voxels, gt_voxels, dice_scores
 
 
+def average(x: Union[ndarray, Sequence], axis: int = None, weights: ndarray = None) -> ndarray:
+    if np.all(weights == 0):
+        return np.mean(x, axis=axis)
+    return np.average(x, axis=axis, weights=weights)
+
+
 def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool, dtype: np.dtype,
                       indices: dict, num_workers: int) -> dict:
     """ Evaluates and aggregates metrics from each pair of prediction and GT, calculating the Dice Score for each label,
@@ -159,7 +165,7 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
         for score, label in zip(scores, index_keys):
             metrics[pred][label] = score
         metrics[pred]['Mean'] = np.mean(scores)
-        metrics[pred]['Weighted mean'] = np.average(scores, weights=voxels)
+        metrics[pred]['Weighted mean'] = average(scores, weights=voxels)
 
     common_voxels = np.sum(common_voxels, axis=0)
     all_voxels = np.sum(all_voxels, axis=0)
@@ -167,12 +173,12 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
     scores = np.mean(dice_scores, axis=0)
     metrics['Mean'] = {label: score for label, score in zip(index_keys, scores)}
     metrics['Mean']['Mean'] = np.mean(scores)
-    metrics['Mean']['Weighted mean'] = np.average(scores, weights=np.sum(gt_voxels, axis=0))
+    metrics['Mean']['Weighted mean'] = average(scores, weights=np.sum(gt_voxels, axis=0))
 
-    scores = np.average(dice_scores, axis=0, weights=np.sum(gt_voxels, axis=1))
+    scores = average(dice_scores, axis=0, weights=np.sum(gt_voxels, axis=1))
     metrics['Weighted mean'] = {label: score for label, score in zip(index_keys, scores)}
     metrics['Weighted mean']['Mean'] = np.mean(scores)
-    metrics['Weighted mean']['Weighted mean'] = np.average(scores, weights=np.sum(gt_voxels, axis=0))
+    metrics['Weighted mean']['Weighted mean'] = average(scores, weights=np.sum(gt_voxels, axis=0))
 
     scores = []
     for common, both in zip(common_voxels, all_voxels):
@@ -182,7 +188,7 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
             scores.append(2 * common / both)
     metrics['Union dice'] = {label: score for label, score in zip(index_keys, scores)}
     metrics['Union dice']['Mean'] = np.mean(scores)
-    metrics['Union dice']['Weighted mean'] = np.average(scores, weights=np.sum(gt_voxels, axis=0))
+    metrics['Union dice']['Weighted mean'] = average(scores, weights=np.sum(gt_voxels, axis=0))
     return metrics
 
 
