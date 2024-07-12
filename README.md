@@ -22,7 +22,6 @@ Simple usage (terminal):
 ```
 dice_score_3d GT.nii.gz PRED.nii.gz -output results.json -indices "{'lung': 1, 'heart': 2}" --console
 dice_score_3d GT.nii.gz PRED.nii.gz -output results.json -indices indices.json
-
 ```
 
 Complete documentation:
