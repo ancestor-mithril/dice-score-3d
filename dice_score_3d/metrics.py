@@ -63,6 +63,9 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices
 
 
 def dice(x: ndarray, y: ndarray) -> Tuple[int, int, int, float]:
+    """ Calculates the Dice Score and collects common, GT and the union of voxels for a pair of prediction and GT
+    using a single index (label).
+    """
     x_sum = x.sum()
     y_sum = y.sum()
     both = x_sum + y_sum
@@ -80,6 +83,9 @@ def dice(x: ndarray, y: ndarray) -> Tuple[int, int, int, float]:
 
 
 def multi_class_dice(gt: ndarray, pred: ndarray, indices: Sequence[int]) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
+    """ Calculates the Dice Score and collects common, GT and the union of voxels for a pair of prediction and GT
+    using all indices (labels).
+    """
     common_voxels = []
     all_voxels = []
     gt_voxels = []
@@ -100,6 +106,8 @@ def multi_class_dice(gt: ndarray, pred: ndarray, indices: Sequence[int]) -> Tupl
 
 def evaluate_prediction(gt: str, pred: str, reorient: bool, dtype: np.dtype, indices: Sequence[int]) \
         -> Tuple[ndarray, ndarray, ndarray, ndarray]:
+    """ Evaluates a single pair of prediction and GT and collects metrics.
+    """
     gt = read_mask(gt, reorient, dtype)
     pred = read_mask(pred, reorient, dtype)
     return multi_class_dice(gt, pred, indices)
@@ -107,6 +115,8 @@ def evaluate_prediction(gt: str, pred: str, reorient: bool, dtype: np.dtype, ind
 
 def evaluate_predictions(gt_files: List[str], pred_files: List[str], reorient: bool, dtype: np.dtype,
                          indices: Sequence[int], num_workers: int) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
+    """ Evaluates each pair of prediction and GT sequentially or in parallel and collects metrics.
+    """
     if num_workers == 0:
         ret = [evaluate_prediction(gt, pred, reorient, dtype, indices) for gt, pred in zip(gt_files, pred_files)]
     else:
@@ -133,6 +143,10 @@ def evaluate_predictions(gt_files: List[str], pred_files: List[str], reorient: b
 
 def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool, dtype: np.dtype,
                       indices: dict, num_workers: int) -> dict:
+    """ Evaluates and aggregates metrics from each pair of prediction and GT, calculating the Dice Score for each label,
+    the mean and weighted mean for each case and also the per-label mean, weighted mean and Union Dice. The Union Dice
+    is calculated as if all volumes are combined into one single volume.
+    """
     index_keys = indices.keys()
     index_values = indices.values()
     common_voxels, all_voxels, gt_voxels, dice_scores = evaluate_predictions(
@@ -172,6 +186,8 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
 
 
 def write_metrics(output_path: str, metrics: dict, indices: dict, console=bool):
+    """ Writes the metrics to the csv or json file. Also prints to console if `console` is `True`.
+    """
     json_str = json.dumps(metrics, indent=2)
     if console:
         print(json_str)
