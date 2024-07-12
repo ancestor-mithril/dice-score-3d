@@ -11,12 +11,14 @@ def main():
                         help='Path to Ground Truth. Can be a single file or a folder with all the GT volumes.'
                              'The number of GT files must match the number of predictions.'
                              'When passing a folder of GT files, the name of the GT files must match the name of the '
-                             'predictions. This is not applicable when passing a single file.')
+                             'predictions. This is not applicable when passing a single file. '
+                             'Either SimpleITK or Nibabel must be able to read the files.')
     parser.add_argument('predictions', type=str,
                         help='Path to Ground Truth. Can be a single file or a folder with all the predicted volumes.'
                              'The number of prediction files must match the number of GT files.'
                              'When passing a folder of prediction files, the name of the prediction files must match '
-                             'the name of the GT files. This is not applicable when passing a single file.')
+                             'the name of the GT files. This is not applicable when passing a single file.'
+                             'Either SimpleITK or Nibabel must be able to read the files.')
     parser.add_argument('-output', type=str, required=True,
                         help='The output path to write the csv or json file, depending on extension. '
                              'Example: results.csv, results.json')
