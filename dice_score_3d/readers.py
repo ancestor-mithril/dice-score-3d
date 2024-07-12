@@ -25,7 +25,7 @@ def read_nibabel(path: str, reorient: bool) -> ndarray:
     img = nibabel.load(path)
     if reorient:
         img = img.as_reoriented(io_orientation(img.affine))
-    return img.get_fdata()
+    return img.get_fdata().transpose((2, 1, 0))
 
 
 def robust_read(path: str, reorient: bool) -> ndarray:
