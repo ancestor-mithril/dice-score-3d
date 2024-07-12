@@ -1,5 +1,6 @@
 # dice-score-3d
-Utility for calculating the Dice Similarity Coefficient (DSC) for 3D segmentation masks. Writes the results in a csv or json file and can be used both from the terminal or from a Python script.
+Utility for calculating the Dice Similarity Coefficient (DSC) for 3D segmentation masks. Writes the results in a csv or json file and can be used both from the terminal or from a Python script. 
+Calculates per-case mean Dice and weighted mean Dice, and per-label mean Dice, weighted mean Dice and Union Dice. The Union Dice for a label is the Dice Score calculated as if all the cases are concatenated into a single big case, aiming to balance out cases in which the Dice Score is 0 but have very few FP voxels or cases in which the Dice Score is 1 but have no positive voxels.
 
 ## Installation
 
@@ -20,6 +21,8 @@ dice_metrics(gt_dir, pred_dir, output_path='results.csv',  indices={'lung': 1, '
 Simple usage (terminal):
 ```
 dice_score_3d GT.nii.gz PRED.nii.gz -output results.json -indices "{'lung': 1, 'heart': 2}" --console
+dice_score_3d GT.nii.gz PRED.nii.gz -output results.json -indices indices.json
+
 ```
 
 Complete documentation:
