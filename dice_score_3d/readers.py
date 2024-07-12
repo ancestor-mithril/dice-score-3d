@@ -1,6 +1,7 @@
 import SimpleITK as sitk
 import nibabel
 import numpy as np
+from numpy import ndarray
 from nibabel import io_orientation
 
 
@@ -8,7 +9,7 @@ class ReadError(Exception):
     pass
 
 
-def read_sitk(path: str, reorient: bool):
+def read_sitk(path: str, reorient: bool) -> ndarray:
     try:
         img = sitk.ReadImage(path)
     except RuntimeError as e:
@@ -20,14 +21,14 @@ def read_sitk(path: str, reorient: bool):
     return sitk.GetArrayFromImage(img)
 
 
-def read_nibabel(path: str, reorient: bool):
+def read_nibabel(path: str, reorient: bool) -> ndarray:
     img = nibabel.load(path)
     if reorient:
         img = img.as_reoriented(io_orientation(img.affine))
     return img.get_fdata()
 
 
-def robust_read(path: str, reorient: bool):
+def robust_read(path: str, reorient: bool) -> ndarray:
     try:
         return read_sitk(path, reorient)
     except ReadError as e1:
@@ -37,5 +38,5 @@ def robust_read(path: str, reorient: bool):
             raise e2 from e1  # we raise both exceptions
 
 
-def read_mask(path: str, reorient: bool, dtype: np.dtype):
+def read_mask(path: str, reorient: bool, dtype: np.dtype) -> ndarray:
     return robust_read(path, reorient).astype(dtype, copy=False)
