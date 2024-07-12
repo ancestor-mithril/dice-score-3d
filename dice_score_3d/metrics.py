@@ -48,6 +48,8 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices
         pred_files = sorted([x for x in os.listdir(predictions) if x.startswith(prefix) and x.endswith(suffix)])
         assert gt_files == pred_files, (f'GT files not found in predictions: {set(gt_files) - set(pred_files)}. '
                                         f'Prediction files not found in GT: {set(pred_files) - set(gt_files)}')
+        gt_files = [os.path.join(ground_truths, x) for x in gt_files]
+        pred_files = [os.path.join(predictions, x) for x in pred_files]
     else:
         gt_files = [ground_truths]
         pred_files = [predictions]
