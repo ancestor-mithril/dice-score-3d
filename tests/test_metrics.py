@@ -3,8 +3,8 @@ import tempfile
 import unittest
 
 import numpy as np
-from dice_score_3d.reader import read_mask
 
+from dice_score_3d import dice_metrics
 from dice_score_3d.metrics import dice, multi_class_dice, evaluate_prediction
 from tests.utils import create_and_write_volume
 
@@ -42,6 +42,14 @@ class TestMetrics(unittest.TestCase):
         finally:
             tmp.close()
             os.unlink(tmp.name)
+
+    def test_dice_metrics(self):
+        self.assertRaisesRegex(AssertionError, 'Prediction path and GT path must both be a single file or a folder',
+                               dice_metrics, './', './random_string?.!@3$not_a_path', 'results.csv', {'Lung': 1})
+        self.assertRaisesRegex(AssertionError, 'Output path must be either .csv or .json, is results.txt',
+                               dice_metrics, './', './', 'results.txt', {'Lung': 1})
+        self.assertRaisesRegex(AssertionError, 'Indices must be integers, found .*',
+                               dice_metrics, './', './', 'results.csv', {'Lung': 'text'})
 
 
 if __name__ == '__main__':

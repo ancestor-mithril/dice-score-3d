@@ -41,7 +41,7 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices
     dtype = np.uint8 if dtype == 'uint8' else np.uint16
     assert os.path.isfile(ground_truths) and os.path.isfile(predictions) or \
            os.path.isdir(ground_truths) and os.path.isdir(predictions), ('Prediction path and GT path must both be a '
-                                                                         'a single file or a folder.')
+                                                                         'single file or a folder.')
 
     if os.path.isdir(ground_truths):
         gt_files = sorted([x for x in os.listdir(ground_truths) if x.startswith(prefix) and x.endswith(suffix)])
