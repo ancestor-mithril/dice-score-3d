@@ -2,8 +2,8 @@ import numpy as np
 import SimpleITK as sitk
 
 
-def create_random_volume(high=5, size=(20, 20, 20), random_direction=False):
-    x = np.random.randint(low=0, high=high, size=size, dtype=np.uint8 if high < 255 else np.uint16)
+def create_random_volume(high=5, size=(22, 21, 20), random_direction=False, dtype=np.uint8):
+    x = np.random.randint(low=0, high=high, size=size, dtype=dtype)
     spacing = (1, 1, 1)
     origin = (0, 0, 0)
     if random_direction:
@@ -21,6 +21,6 @@ def write_volume(path, volume, spacing, origin, direction):
     sitk.WriteImage(img, path)
 
 
-def create_and_write_volume(path, high=5, size=(22, 21, 20), random_direction=False):
-    volume, spacing, origin, direction = create_random_volume(high, size, random_direction)
+def create_and_write_volume(path, high=5, size=(22, 21, 20), random_direction=False, dtype=np.uint8):
+    volume, spacing, origin, direction = create_random_volume(high, size, random_direction, dtype=dtype)
     write_volume(path, volume, spacing, origin, direction)

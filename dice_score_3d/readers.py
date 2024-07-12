@@ -6,6 +6,9 @@ from nibabel import io_orientation
 
 
 class ReadError(Exception):
+    """
+    Exception for reading files with SimpleITK. For some files, nibabel can be used instead.
+    """
     pass
 
 
