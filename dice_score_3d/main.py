@@ -31,15 +31,18 @@ def main():
                         help='Reorients both the GT and the prediction to the default "LPS" orientation before '
                              'calculating the Dice Score.')
     parser.add_argument('-dtype', type=str, required=False, default='uint8', choices=['uint8', 'uint16'],
-                        help='Must be either "uint8" when having less than 255 classes, or "uint16" otherwise.')
+                        help='Must be either "uint8" when having less than 255 classes, or "uint16" otherwise. '
+                             'Default: uint8.')
     parser.add_argument('-prefix', type=str, required=False, default='',
                         help='This parameter is used when the ground truth path is a folder. '
                              'It filters all the files in the folder and selects only the files with this prefix.')
     parser.add_argument('-suffix', type=str, required=False, default='.nii.gz',
                         help='This parameter is used when the ground truth path is a folder. '
-                             'It filters all the files in the folder and selects only the files with this suffix.')
+                             'It filters all the files in the folder and selects only the files with this suffix. '
+                             'Default: .nii.gz.')
     parser.add_argument('-num_workers', type=int, required=False, default=0,
-                        help='Number of parallel processes to be used to calculate the Dice Score in parallel.')
+                        help='Number of parallel processes to be used to calculate the Dice Score in parallel. '
+                             'Default: 0.')
     parser.add_argument('--console', action='store_true', default=False,
                         help='Also prints the Dice metrics to console.')
     args = parser.parse_args()
