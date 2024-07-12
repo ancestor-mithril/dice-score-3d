@@ -31,7 +31,7 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: str, reorien
     print(f"Found {len(gt_files)} cases and {len(indices)} classes")
 
     metrics = aggregate_metrics(gt_files, pred_files, reorient, dtype, indices, num_workers)
-    write_metrics(output_path, metrics, indices)
+    write_metrics(output_path, metrics, indices, console)
 
 
 def dice(x: ndarray, y: ndarray) -> Tuple[int, int, int, float]:
@@ -143,10 +143,13 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
     return metrics
 
 
-def write_metrics(output_path: str, metrics: dict, indices: dict):
+def write_metrics(output_path: str, metrics: dict, indices: dict, console=bool):
+    json_str = json.dumps(metrics, indent=2)
+    if console:
+        print(json_str)
     with open(output_path, 'w') as f:
         if output_path.endswith('.json'):
-            json.dump(metrics, f, indent=2)
+            f.write(json_str)
         else:
             columns = ['Cases', *indices.keys(), 'Mean', 'Weighted mean']
             f.write(','.join(columns) + '\n')
