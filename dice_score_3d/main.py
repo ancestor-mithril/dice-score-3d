@@ -2,9 +2,10 @@ import argparse
 import json
 import os.path
 
-from metrics import dice_metrics
+from dice_score_3d import dice_metrics
 
-if __name__ == '__main__':
+
+def main():
     parser = argparse.ArgumentParser(description='DICE Score 3D')
     parser.add_argument('ground_truths', type=str,
                         help='Path to Ground Truth. Can be a single file or a folder with all the GT volumes.'
@@ -50,3 +51,7 @@ if __name__ == '__main__':
 
     dice_metrics(args.ground_truths, args.predictions, args.output, args.reorient, args.dtype, args.prefix,
                  args.suffix, args.indices, args.num_workers, args.console)
+
+
+if __name__ == '__main__':
+    main()

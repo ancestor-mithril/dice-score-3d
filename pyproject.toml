@@ -40,7 +40,7 @@ Repository = "https://github.com/ancestor-mithril/dice-score-3d"
 Issues = "https://github.com/ancestor-mithril/dice-score-3d/issues"
 
 [project.scripts]
-#dice_score_3d = ""
+dice_score_3d = "dice_score_3d.main:main"
 
 [project.optional-dependencies]
 dev = [

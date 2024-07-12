@@ -1,1 +1,1 @@
-from metrics import dice_metrics
+from .metrics import dice_metrics

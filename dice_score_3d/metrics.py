@@ -4,9 +4,8 @@ from concurrent.futures import ProcessPoolExecutor
 from typing import List, Sequence, Tuple
 
 import numpy as np
+from dice_score_3d.readers import read_mask
 from numpy import ndarray
-
-from readers import read_mask
 
 
 def dice_metrics(ground_truths: str, predictions: str, output_path: str, reorient: bool, dtype: str, prefix: str,
