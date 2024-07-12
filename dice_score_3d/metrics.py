@@ -24,9 +24,8 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices
             single file. Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
         output_path (str): The output path to write the computed metrics. Can be a csv or json file, depending on
             extension. Example: "results.csv", "results.json".
-        indices (dict): Path to the json file describing the indices used for calculating the Dice Similarity
-            Coefficient. Can also be a json string. Only the indices present in the json file are considered when
-            evaluating the Dice Score. Example: "{\"lung_left\": 1, \"lung_right\": 2}".
+        indices (dict): Dictionary describing the indices used for calculating the Dice Similarity Coefficient.
+            Example: `{"lung_left": 1, "lung_right": 2}`.
         reorient (bool): If `True`, reorients both the GT and the prediction to the default "LPS" orientation before
             calculating the Dice Score. Default: `False`.
         dtype (str): Must be either "uint8" when having less than 255 classes, or "uint16" otherwise.
