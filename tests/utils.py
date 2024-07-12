@@ -6,10 +6,13 @@ def create_random_volume(high=5, size=(22, 21, 20), random_direction=False, dtyp
     x = np.random.randint(low=0, high=high, size=size, dtype=dtype)
     spacing = (1, 1, 1)
     origin = (0, 0, 0)
+    default_direction = (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
     if random_direction:
         direction = tuple(np.random.uniform(low=-1.0, high=1.0, size=(9,)))
+        if direction == default_direction:
+            direction = (-1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0)
     else:
-        direction = (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
+        direction = default_direction
     return x, spacing, origin, direction
 
 

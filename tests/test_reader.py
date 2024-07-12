@@ -4,19 +4,18 @@ import unittest
 
 import numpy as np
 
-from dice_score_3d.readers import read_sitk, read_nibabel, read_mask
+from dice_score_3d.reader import read_mask
 from tests.utils import create_and_write_volume
 
 
-class TestReaders(unittest.TestCase):
-    def test_readers_are_equivalent(self):
+class TestReader(unittest.TestCase):
+    def test_default_orientation(self):
         tmp = tempfile.NamedTemporaryFile(suffix='.nii.gz', delete=False)
         try:
             create_and_write_volume(tmp.name, random_direction=False)
-            sitk_array = read_sitk(tmp.name, reorient=False)
-            nibabel_array = read_nibabel(tmp.name, reorient=False)
-            self.assertEqual(sitk_array.shape, nibabel_array.shape)
-            self.assertTrue(np.array_equal(sitk_array, nibabel_array))
+            array_1 = read_mask(tmp.name, reorient=False, dtype=np.uint8)
+            array_2 = read_mask(tmp.name, reorient=True, dtype=np.uint8)
+            self.assertTrue(np.array_equal(array_1, array_2))
         finally:
             tmp.close()
             os.unlink(tmp.name)
@@ -43,8 +42,9 @@ class TestReaders(unittest.TestCase):
         tmp = tempfile.NamedTemporaryFile(suffix='.nii.gz', delete=False)
         try:
             create_and_write_volume(tmp.name, random_direction=True)
-            read_sitk(tmp.name, reorient=True)
-            read_nibabel(tmp.name, reorient=True)  # creates warning because the direction matrix is not orthogonal
+            array_1 = read_mask(tmp.name, reorient=False, dtype=np.uint8)
+            array_2 = read_mask(tmp.name, reorient=True, dtype=np.uint8)
+            self.assertFalse(np.array_equal(array_1, array_2))
         finally:
             tmp.close()
             os.unlink(tmp.name)
