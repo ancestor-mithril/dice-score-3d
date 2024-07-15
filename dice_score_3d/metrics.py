@@ -8,10 +8,11 @@ from dice_score_3d.reader import read_mask
 from numpy import ndarray
 
 
-def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices: dict, reorient: bool = False,
-                 dtype: str = 'uint8', prefix: str = '', suffix: str = '.nii.gz', num_workers: int = 0,
-                 console: bool = False):
-    """ Calculates Dice metrics for pairs of predictions and GT, writing the aggregated results in a csv or json file.
+def dice_metrics(ground_truths: str, predictions: str, output_path: Union[str, None], indices: dict,
+                 reorient: bool = False, dtype: str = 'uint8', prefix: str = '', suffix: str = '.nii.gz',
+                 num_workers: int = 0, console: bool = False) -> dict:
+    """ Calculates Dice metrics for pairs of predictions and GT, writing the aggregated results in a csv or json file
+    and returning them as a `dict`.
 
     Args:
         ground_truths (str): Path to Ground Truth. Can be a single file or a folder with all the GT volumes. The number
@@ -22,8 +23,9 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices
             number of prediction files must match the number of GT files. When passing a folder of prediction files,
             the name of the prediction files must match the name of the GT files. This is not applicable when passing a
             single file. Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
-        output_path (str): The output path to write the computed metrics. Can be a csv or json file, depending on
-            extension. Example: "results.csv", "results.json".
+        output_path (Union[str, None]): The output path to write the computed metrics. Can be a csv or json file,
+            depending on extension. Example: "results.csv", "results.json". If `None`, the metrics will not be written
+            to a file.
         indices (dict): Dictionary describing the indices used for calculating the Dice Similarity Coefficient.
             Example: `{"lung_left": 1, "lung_right": 2}`.
         reorient (bool): If `True`, reorients both the GT and the prediction to the default "LPS" orientation before
@@ -54,13 +56,15 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: str, indices
         gt_files = [ground_truths]
         pred_files = [predictions]
 
-    assert output_path.endswith('.csv') or output_path.endswith('.json'), (f'Output path must be either .csv or .json, '
-                                                                           f'is {output_path}')
+    if output_path is not None:
+        assert output_path.endswith('.csv') or output_path.endswith('.json'), (
+            f'If output path is not None, it must be either .csv or .json, is {output_path}')
     assert all([isinstance(x, int) for x in indices.values()]), f'Indices must be integers, found {indices.values()}.'
     print(f"Found {len(gt_files)} cases and {len(indices)} classes")
 
     metrics = aggregate_metrics(gt_files, pred_files, reorient, dtype, indices, num_workers)
     write_metrics(output_path, metrics, indices, console)
+    return metrics
 
 
 def dice(x: ndarray, y: ndarray) -> Tuple[int, int, int, float]:
@@ -192,18 +196,19 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
     return metrics
 
 
-def write_metrics(output_path: str, metrics: dict, indices: dict, console=bool):
+def write_metrics(output_path: str, metrics: dict, indices: dict, console: bool):
     """ Writes the metrics to the csv or json file. Also prints to console if `console` is `True`.
     """
     json_str = json.dumps(metrics, indent=2)
     if console:
         print(json_str)
-    with open(output_path, 'w') as f:
-        if output_path.endswith('.json'):
-            f.write(json_str)
-        else:
-            columns = ['Cases', *indices.keys(), 'Mean', 'Weighted mean']
-            f.write(','.join(columns) + '\n')
-            for key, mapping in metrics.items():
-                row = map(str, [key, *mapping.values()])
-                f.write(','.join(row) + '\n')
+    if output_path is not None:
+        with open(output_path, 'w') as f:
+            if output_path.endswith('.json'):
+                f.write(json_str)
+            else:
+                columns = ['Cases', *indices.keys(), 'Mean', 'Weighted mean']
+                f.write(','.join(columns) + '\n')
+                for key, mapping in metrics.items():
+                    row = map(str, [key, *mapping.values()])
+                    f.write(','.join(row) + '\n')

@@ -46,7 +46,8 @@ class TestMetrics(unittest.TestCase):
     def test_dice_metrics(self):
         self.assertRaisesRegex(AssertionError, 'Prediction path and GT path must both be a single file or a folder',
                                dice_metrics, './', './random_string?.!@3$not_a_path', 'results.csv', {'Lung': 1})
-        self.assertRaisesRegex(AssertionError, 'Output path must be either .csv or .json, is results.txt',
+        self.assertRaisesRegex(AssertionError, 'If output path is not None, it must be either .csv or .json, is '
+                                               'results.txt',
                                dice_metrics, './', './', 'results.txt', {'Lung': 1})
         self.assertRaisesRegex(AssertionError, 'Indices must be integers, found .*',
                                dice_metrics, './', './', 'results.csv', {'Lung': 'text'})
