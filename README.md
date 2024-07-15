@@ -14,7 +14,8 @@ Simple usage (Python):
 ```py
 from dice_score_3d import dice_metrics
 
-
+results_dict = dice_metrics(gt_dir, pred_dir, output_path=None, indices={'lung': 1, 'heart': 2}, suffix='.nii.gz')
+# Write to csv: 
 dice_metrics(gt_dir, pred_dir, output_path='results.csv',  indices={'lung': 1, 'heart': 2}, suffix='.nii.gz', num_workers=8)
 ```
 
