@@ -32,6 +32,7 @@ keywords = [
 dependencies = [
     "numpy",
     "SimpleITK",
+    "tqdm",
 ]
 
 [project.urls]
