@@ -120,13 +120,22 @@ def evaluate_prediction(gt: str, pred: str, reorient: bool, dtype: np.dtype, ind
     return multi_class_dice(gt, pred, indices)
 
 
+def evaluate_prediction_wrapper(data) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
+    """ Wrapper for `evaluate_prediction` for calling it in parallel processes
+    """
+    gt, pred, reorient, dtype, indices = data
+    return evaluate_prediction(gt, pred, reorient, dtype, indices)
+
+
 def execute_evaluate_predictions(gt_files: List[str], pred_files: List[str], reorient: bool, dtype: np.dtype,
                                  indices: Sequence[int], num_workers: int) \
         -> Sequence[Tuple[ndarray, ndarray, ndarray, ndarray]]:
+    """ Execute the prediction evaluation sequentially or in parallel.
+    """
     if num_workers == 0:
         ret = [evaluate_prediction(gt, pred, reorient, dtype, indices) for gt, pred in tqdm(zip(gt_files, pred_files))]
     else:
-        ret = process_map(evaluate_prediction,
+        ret = process_map(evaluate_prediction_wrapper,
                           [(gt, pred, reorient, dtype, indices) for gt, pred in zip(gt_files, pred_files)],
                           max_workers=num_workers)
     return ret
@@ -134,7 +143,7 @@ def execute_evaluate_predictions(gt_files: List[str], pred_files: List[str], reo
 
 def evaluate_predictions(gt_files: List[str], pred_files: List[str], reorient: bool, dtype: np.dtype,
                          indices: Sequence[int], num_workers: int) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
-    """ Evaluates each pair of prediction and GT sequentially or in parallel and collects metrics.
+    """ Evaluates each pair of prediction and GT and collects metrics.
     """
     scores = execute_evaluate_predictions(gt_files, pred_files, reorient, dtype, indices, num_workers)
     common_voxels = []
