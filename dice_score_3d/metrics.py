@@ -133,7 +133,8 @@ def execute_evaluate_predictions(gt_files: List[str], pred_files: List[str], reo
     """ Execute the prediction evaluation sequentially or in parallel.
     """
     if num_workers == 0:
-        ret = [evaluate_prediction(gt, pred, reorient, dtype, indices) for gt, pred in tqdm(zip(gt_files, pred_files))]
+        ret = [evaluate_prediction(gt, pred, reorient, dtype, indices) for gt, pred in tqdm(
+            list(zip(gt_files, pred_files)))]
     else:
         ret = process_map(evaluate_prediction_wrapper,
                           [(gt, pred, reorient, dtype, indices) for gt, pred in zip(gt_files, pred_files)],
