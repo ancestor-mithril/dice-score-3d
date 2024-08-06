@@ -136,9 +136,12 @@ def execute_evaluate_predictions(gt_files: List[str], pred_files: List[str], reo
         ret = [evaluate_prediction(gt, pred, reorient, dtype, indices) for gt, pred in tqdm(
             list(zip(gt_files, pred_files)))]
     else:
+        chunksize = len(gt_files) // num_workers // 4  # arbitrarily chosen
+        if chunksize < 4:
+            chunksize = 1
         ret = process_map(evaluate_prediction_wrapper,
                           [(gt, pred, reorient, dtype, indices) for gt, pred in zip(gt_files, pred_files)],
-                          max_workers=num_workers)
+                          max_workers=num_workers, chunksize=chunksize)
     return ret
 
 
