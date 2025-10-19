@@ -53,4 +53,5 @@ options:
   -num_workers NUM_WORKERS
                         Number of parallel processes to be used to calculate the Dice Score in parallel. Default: 0.
   --console             Also prints the Dice metrics to console.
+  --ignore_gt_size      Allows the presence of additional GT files in the GT folder.
 ```

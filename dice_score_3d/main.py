@@ -9,13 +9,15 @@ def main():
     parser = argparse.ArgumentParser(description='DICE Score 3D')
     parser.add_argument('ground_truths', type=str,
                         help='Path to Ground Truth. Can be a single file or a folder with all the GT volumes. '
-                             'The number of GT files must match the number of predictions. '
+                             'The number of GT files must match the number of predictions, '
+                             'unless `ignore_gt_size` is used. '
                              'When passing a folder of GT files, the name of the GT files must match the name of the '
                              'predictions. This is not applicable when passing a single file. '
                              'Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.')
     parser.add_argument('predictions', type=str,
                         help='Path to Ground Truth. Can be a single file or a folder with all the predicted volumes. '
-                             'The number of prediction files must match the number of GT files. '
+                             'The number of prediction files must match the number of GT files, '
+                             'unless `ignore_gt_size` is used. '
                              'When passing a folder of prediction files, the name of the prediction files must match '
                              'the name of the GT files. This is not applicable when passing a single file. '
                              'Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.')
@@ -45,6 +47,8 @@ def main():
                              'Default: 0.')
     parser.add_argument('--console', action='store_true', default=False,
                         help='Also prints the Dice metrics to console.')
+    parser.add_argument('--ignore_gt_size', action='store_true', default=False,
+                        help='Allows the presence of additional GT files in the GT folder.')
     args = parser.parse_args()
     if os.path.isfile(args.indices):
         with open(args.indices, 'r') as f:
@@ -55,7 +59,7 @@ def main():
         args.indices = json.loads(args.indices)
 
     dice_metrics(args.ground_truths, args.predictions, args.output, args.indices, args.reorient, args.dtype,
-                 args.prefix, args.suffix, args.num_workers, args.console)
+                 args.prefix, args.suffix, args.num_workers, args.console, args.ignore_gt_size)
 
 
 if __name__ == '__main__':

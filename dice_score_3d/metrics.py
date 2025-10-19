@@ -12,19 +12,19 @@ from dice_score_3d.reader import read_mask
 
 def dice_metrics(ground_truths: str, predictions: str, output_path: Union[str, None], indices: dict,
                  reorient: bool = False, dtype: str = 'uint8', prefix: str = '', suffix: str = '.nii.gz',
-                 num_workers: int = 0, console: bool = False) -> dict:
+                 num_workers: int = 0, console: bool = False, ignore_gt_size: bool = False) -> dict:
     """ Calculates Dice metrics for pairs of predictions and GT, writing the aggregated results in a csv or json file
     and returning them as a `dict`.
 
     Args:
         ground_truths (str): Path to Ground Truth. Can be a single file or a folder with all the GT volumes. The number
-            of GT files must match the number of predictions.When passing a folder of GT files, the name of the GT
-            files must match the name of the predictions. This is not applicable when passing a single file. Supported
-            file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
+            of GT files must match the number of predictions, unless `ignore_gt_size` is used. When passing a folder of
+            GT files, the name of the GT files must match the name of the predictions. This is not applicable when
+            passing a single file. Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
         predictions (str): Path to Ground Truth. Can be a single file or a folder with all the predicted volumes. The
-            number of prediction files must match the number of GT files. When passing a folder of prediction files,
-            the name of the prediction files must match the name of the GT files. This is not applicable when passing a
-            single file. Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
+            number of prediction files must match the number of GT files, unless `ignore_gt_size` is used. When passing
+            a folder of prediction files, the name of the prediction files must match the name of the GT files. This is
+            not applicable when passing a single file. Supported file formats: .nii, .nii.gz, .nrrd, .mha, .gipl.
         output_path (Union[str, None]): The output path to write the computed metrics. Can be a csv or json file,
             depending on extension. Example: "results.csv", "results.json". If `None`, the metrics will not be written
             to a file.
@@ -41,6 +41,7 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: Union[str, N
         num_workers (int): Number of parallel processes to be used to calculate the Dice Score in parallel. Default:
             `0`.
         console (bool): If `True`, also prints the Dice metrics to console. Default: `False`.
+        ignore_gt_size (bool): If `True`, allows the presence of additional GT files in the GT folder. Default: `False`.
     """
     dtype = np.uint8 if dtype == 'uint8' else np.uint16
     assert os.path.isfile(ground_truths) and os.path.isfile(predictions) or \
@@ -50,9 +51,14 @@ def dice_metrics(ground_truths: str, predictions: str, output_path: Union[str, N
     if os.path.isdir(ground_truths):
         gt_files = sorted([x for x in os.listdir(ground_truths) if x.startswith(prefix) and x.endswith(suffix)])
         pred_files = sorted([x for x in os.listdir(predictions) if x.startswith(prefix) and x.endswith(suffix)])
-        assert gt_files == pred_files, (f'GT files not found in predictions: {set(gt_files) - set(pred_files)}. '
-                                        f'Prediction files not found in GT: {set(pred_files) - set(gt_files)}')
-        gt_files = [os.path.join(ground_truths, x) for x in gt_files]
+        if not ignore_gt_size:
+            assert gt_files == pred_files, (f'GT files not found in predictions: {set(gt_files) - set(pred_files)}. '
+                                            f'Prediction files not found in GT: {set(pred_files) - set(gt_files)}')
+            gt_files = [os.path.join(ground_truths, x) for x in gt_files]
+        else:
+            assert all(x in gt_files for x in pred_files), f'Prediction files not found in GT: ' \
+                                                           f'{set(pred_files) - set(gt_files)}'
+            gt_files = [os.path.join(ground_truths, x) for x in gt_files if x in pred_files]
         pred_files = [os.path.join(predictions, x) for x in pred_files]
     else:
         gt_files = [ground_truths]
