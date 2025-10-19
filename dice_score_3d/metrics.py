@@ -174,7 +174,7 @@ def average(x: Union[ndarray, Sequence], axis: int = None, weights: ndarray = No
 def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool, dtype: np.dtype,
                       indices: dict, num_workers: int) -> dict:
     """ Evaluates and aggregates metrics from each pair of prediction and GT, calculating the Dice Score for each label,
-    the mean and weighted mean for each case and also the per-label mean, weighted mean and Union Dice. The Union Dice
+    the mean and weighted mean for each case and also the per-label mean, weighted mean and Global Dice. The Union Dice
     is calculated as if all volumes are combined into one single volume.
     """
     index_keys = indices.keys()
@@ -209,9 +209,9 @@ def aggregate_metrics(gt_files: List[str], pred_files: List[str], reorient: bool
             scores.append(1.0)
         else:
             scores.append(2 * common / both)
-    metrics['Union dice'] = {label: score for label, score in zip(index_keys, scores)}
-    metrics['Union dice']['Mean'] = np.mean(scores)
-    metrics['Union dice']['Weighted mean'] = average(scores, weights=np.sum(gt_voxels, axis=0))
+    metrics['Global dice'] = {label: score for label, score in zip(index_keys, scores)}
+    metrics['Global dice']['Mean'] = np.mean(scores)
+    metrics['Global dice']['Weighted mean'] = average(scores, weights=np.sum(gt_voxels, axis=0))
     return metrics
 
 
