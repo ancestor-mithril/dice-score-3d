@@ -1,6 +1,21 @@
 # dice-score-3d
-Utility for calculating the Dice Similarity Coefficient (DSC) for 3D segmentation masks. Writes the results in a csv or json file and can be used both from the terminal or from a Python script. 
-Calculates per-case mean Dice and weighted mean Dice, and per-label mean Dice, weighted mean Dice and Global Dice. The Global Dice for a label is the Dice Score calculated as if all the cases are concatenated into a single big case, aiming to balance out cases in which the Dice Score is 0 but have very few FP voxels or cases in which the Dice Score is 1 but have no positive voxels.
+Utility for calculating the Dice Similarity Coefficient (DSC) for 3D segmentation masks. 
+Writes the results in a csv or json file and can be used both from the terminal or from a Python script. 
+
+It also computes per-label `Mean Dice`, `Weighted Mean Dice` and `Global Dice`. `Global Dice` is the recommended metric when averaging the performance across multiple cases.
+
+The `Mean Dice` score is the average of the Dice across all cases:
+
+$$\text{Mean Dice} = \frac{1}{N} \sum_{i=1}^{N} \frac{2 |P_i \cap G_i|}{|P_i| + |G_i|}$$
+
+where $$P_i$$ and $$G_i$$ are the predicted and ground-truth voxels for case $$i$$.
+
+However, `Mean Dice` can be misleading when the Dice score is $$0$$ or $$1$$ for an instance with few missclassified voxels.
+`Global Dice` aggregates all cases into a single large volume before computing the Dice score:
+
+$$\text{Global Dice} = \frac{2 \sum_{i=1}^{N} |P_i \cap G_i|}{\sum_{i=1}^{N} (|P_i| + |G_i|)}$$
+
+This formulation ensures that every voxel contributes equally, balancing out edge cases where individual Dice scores might be undefined or misleadingly perfect.
 
 ## Installation
 
