@@ -1,16 +1,16 @@
 [project]
 name = "dice-score-3d"
-version = "1.1.1"
+version = "1.1.2"
 #requires-python = ">=3.10"
 requires-python = ">=3.7"
 description = "Utility for calculating the Dice Similarity Coefficient (DSC) for 3D segmentation masks."
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
-    { name = "George Stoica", email = "58839912+ancestor-mithril@users.noreply.github.com" },
+    { name = "George Stoica", email = "george.stoica@info.uaic.ro" },
 ]
 maintainers = [
-    { name = "George Stoica", email = "58839912+ancestor-mithril@users.noreply.github.com" },
+    { name = "George Stoica", email = "george.stoica@info.uaic.ro" },
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
