@@ -10,7 +10,11 @@ def read_mask(path: str, reorient: bool, dtype: np.dtype) -> ndarray:
         reorient (bool): If `True`, the segmentation mask is reoriented to the "LPS" orientation.
         dtype (np.dtype): The data type of the returned ndarray.
     """
-    img = sitk.ReadImage(path)
-    if reorient:
-        img = sitk.DICOMOrient(img)
-    return sitk.GetArrayFromImage(img).astype(dtype, copy=False)
+    try:
+        img = sitk.ReadImage(path)
+        if reorient:
+            img = sitk.DICOMOrient(img)
+        return sitk.GetArrayFromImage(img).astype(dtype, copy=False)
+    except Exception as e:
+        print(f"Failed reading {path} due to {e}")
+        raise e
